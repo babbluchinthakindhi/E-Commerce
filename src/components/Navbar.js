@@ -1,21 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // Import Auth Context
 import "../styles/Navbar.css";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, logout } = useAuth(); // Get auth state and logout function
   const navigate = useNavigate();
 
-  // Check for authentication token on component mount
-  useEffect(() => {
-    const authToken = localStorage.getItem("authToken");
-    setIsLoggedIn(!!authToken);
-  }, []);
-
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    setIsLoggedIn(false);
+    logout(); // Call logout function
     navigate("/signup"); // Redirect to Signup page
   };
 
@@ -52,25 +46,23 @@ const Navbar = () => {
             </Link>
           </li>
           {!isLoggedIn ? (
+            <>
+              <li>
+                <Link to="/signup" onClick={toggleMobileMenu}>
+                  Signup
+                </Link>
+              </li>
+              <li>
+                <Link to="/login" onClick={toggleMobileMenu}>
+                  Login
+                </Link>
+              </li>
+            </>
+          ) : (
             <li>
-              <Link to="/signup" onClick={toggleMobileMenu}>
-                Signup
-              </Link>
-            </li>
-          ) : null}
-          {isLoggedIn ? (
-            <li>
-              <Link to='/signup' onClick={toggleMobileMenu}>
               <button className="logout-btn" onClick={handleLogout}>
                 LogOut
               </button>
-              </Link>
-            </li>
-          ) : (
-            <li>
-              <Link to="/login" onClick={toggleMobileMenu}>
-                Login
-              </Link>
             </li>
           )}
         </ul>
